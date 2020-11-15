@@ -3,9 +3,13 @@
   "version": "1.0.0",
   "description": "Node.js e-commerce with admin panel",
   "main": "app.js",
+  "engines": {
+    "node": "14.2.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app.js",
+    "start": "node app.js",
+    "startdev": "nodemon app.js",
     "start-server": "node app.js"
   },
   "author": "Oleg Shevtsov",
@@ -17,6 +21,7 @@
     "bcrypt": "^5.0.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
+    "compression": "^1.7.4",
     "connect-flash": "^0.1.1",
     "connect-mongodb-session": "^2.4.1",
     "csurf": "^1.11.0",
@@ -25,8 +30,10 @@
     "express-handlebars": "^3.0.0",
     "express-session": "^1.17.1",
     "express-validator": "^6.6.1",
+    "helmet": "^4.2.0",
     "mongodb": "^3.1.6",
     "mongoose": "^5.2.17",
+    "morgan": "^1.10.0",
     "multer": "^1.4.2",
     "mysql2": "^1.6.1",
     "nodemailer": "^6.4.15",
