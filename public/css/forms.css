@@ -21,3 +21,9 @@
 .form-control textarea:focus {
   outline-color: #00695c;
 }
+.form-control input.error-intput{
+  border-color: red;
+}
+.form-control textarea.error-intput{
+  border-color: red;
+}

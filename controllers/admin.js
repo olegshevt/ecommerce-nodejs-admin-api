@@ -1,40 +1,85 @@
 const Product = require('../models/product');
+const { validationResult } = require('express-validator');
+const fileHelper = require('../util/file');
+
 
 exports.getAddProduct = (req, res, next) => {
+
+  let message = req.flash('error');
+  if (message.length > 0) {
+    message = message[0];
+  } else {
+    message = null;
+  }
+
   res.render('admin/edit-product', {
     pageTitle: 'Add Product',
     path: '/admin/add-product',
     editing: false,
-    isAuthenticated: req.session.isLoggedIn
+    errorMessage: message,
+    oldInputs: { title: '', imageUrl: '', description: '', price: '' },
+    validationErrors: []
   });
 };
 
 exports.postAddProduct = (req, res, next) => {
   const title = req.body.title;
-  const imageUrl = req.body.imageUrl;
+  const imageUrl = req.file;
   const price = req.body.price;
   const description = req.body.description;
-  const product = new Product({
-    title: title,
-    price: price,
-    description: description,
-    imageUrl: imageUrl,
-    userId: req.user
-  });
-  product
-    .save()
-    .then(result => {
-      // console.log(result);
-      console.log('Created Product');
-      res.redirect('/admin/products');
-    })
-    .catch(err => {
-      console.log(err);
+
+  if (!imageUrl) {
+    return res.status(422).render('admin/edit-product', {
+      path: '/admin/edit-product',
+      pageTitle: 'Add product',
+      editing: false,
+      errorMessage: 'Attached file is not an image.',
+      validationErrors: []
     });
+  }
+  const errors = validationResult(req);
+  const imagePath = imageUrl.path;
+  if (!errors.isEmpty()) {
+    return res.status(422).render('admin/edit-product', {
+      path: '/admin/add-product',
+      pageTitle: 'Add product',
+      errorMessage: errors.array()[0].msg,
+      editing: false,
+      oldInputs: { title: title, imageUrl: imageUrl, description: description, price: price },
+      validationErrors: errors.array()
+    });
+
+  } else {
+    const product = new Product({
+      title: title,
+      price: price,
+      description: description,
+      imageUrl: imagePath,
+      userId: req.user
+    });
+    product
+      .save()
+      .then(result => {
+        // console.log(result);
+        console.log('Created Product');
+        res.redirect('/admin/products');
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
 };
 
 exports.getEditProduct = (req, res, next) => {
   const editMode = req.query.edit;
+
+  let message = req.flash('error');
+  if (message.length > 0) {
+    message = message[0];
+  } else {
+    message = null;
+  }
+
   if (!editMode) {
     return res.redirect('/');
   }
@@ -49,7 +94,8 @@ exports.getEditProduct = (req, res, next) => {
         path: '/admin/edit-product',
         editing: editMode,
         product: product,
-        isAuthenticated: req.session.isLoggedIn
+        errorMessage: message,
+        validationErrors: []
       });
     })
     .catch(err => console.log(err));
@@ -86,19 +132,27 @@ exports.getProducts = (req, res, next) => {
       res.render('admin/products', {
         prods: products,
         pageTitle: 'Admin Products',
-        path: '/admin/products',
-        isAuthenticated: req.session.isLoggedIn
+        path: '/admin/products'
       });
     })
     .catch(err => console.log(err));
 };
 
-exports.postDeleteProduct = (req, res, next) => {
-  const prodId = req.body.productId;
-  Product.findByIdAndRemove(prodId)
-    .then(() => {
+exports.deleteProduct = (req, res, next) => {
+  const prodId = req.params.productId;
+  Product.findById(prodId)
+    .then(product => {
+      if (!product) {
+        return next(new Error('Product not found'));
+      }
+      fileHelper.deleteFile(product.imageUrl);
+      return Product.deleteOne({ _id: prodId, userId: req.user._id });
+    }).then(() => {
       console.log('DESTROYED PRODUCT');
-      res.redirect('/admin/products');
+      res.status(200).json({ message: 'Success!' });
+      // res.redirect('/admin/products');
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      res.status(500).json({ message: 'Failed!' });
+    })
 };

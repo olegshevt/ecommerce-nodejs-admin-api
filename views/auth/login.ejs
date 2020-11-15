@@ -7,16 +7,25 @@
     <%- include('../includes/navigation.ejs') %>
 
     <main>
+        <% if(errorMessage) {%>
+        <div class="user-message user-message--error"><%= errorMessage %></div>
+        <% }%>
         <form class="login-form" action="/login" method="POST">
             <div class="form-control">
                 <label for="email">Email</label>
-                <input type="text" name="email" id="email" value="">
+                <input type="text" name="email" id="email"
+                    class="<%= validationErrors.find(item => item.param === 'email') ? 'error-intput' : '' %>"
+                    value="<%= oldInputs.email %>">
             </div>
             <div class="form-control">
                 <label for="password">Password</label>
-                <input type="password" name="password" id="password" value="">
+                <input type="password" name="password" id="password"
+                    class="<%= validationErrors.find(item => item.param === 'password') ? 'error-intput' : '' %>"
+                    value="<%= oldInputs.password %>">
             </div>
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <button class="btn" type="submit">Login</button>
         </form>
+        <div class="centered"><a href="/reset">Reset password</a></div>
     </main>
     <%- include('../includes/end.ejs') %>
