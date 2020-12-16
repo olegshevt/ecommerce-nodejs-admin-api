@@ -1,0 +1,45 @@
+<%- include('../../includes/head.ejs') %>
+<link rel="stylesheet" href="/css/product.css">
+</head>
+
+<body>
+    <%- include('../../includes/navigation.ejs') %>
+    <main>
+        <% if (news.length > 0) { %>
+        <div class="grid">
+            <% for (let item of news) { %>
+            <article class="card product-item">
+                <header class="card__header">
+                    <h1 class="product__title">
+                        <%= item.title %>
+                    </h1>
+                </header>
+                <div class="card__image">
+                    <img src="/<%= item.imageUrl %>" alt="<%= item.title %>">
+                </div>
+                <div class="card__content">
+                    <h2 class="product__price">
+                        <%= item.date %>
+                    </h2>
+                    <p class="product__description">
+                        <%= item.description %>
+                    </p>
+                </div>
+                <div class="card__actions">
+                    <a href="/admin/news/edit-news/<%= item._id %>?edit=true" class="btn">Edit</a>
+
+                    <input type="hidden" value="<%= item._id %>" name="newsId">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <button class="btn" onclick="delNews(this)" type=" button">Delete</button>
+
+
+                </div>
+            </article>
+            <% } %>
+        </div>
+        <% } else { %>
+        <h1>No News Found!</h1>
+        <% } %>
+    </main>
+    <%- include('../../includes/end.ejs') %>
+    <script src="/js/admin.js"></script>

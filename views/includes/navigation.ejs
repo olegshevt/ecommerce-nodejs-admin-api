@@ -3,9 +3,7 @@
     <button id="side-menu-toggle">Menu</button>
     <nav class="main-header__nav">
         <ul class="main-header__item-list">
-            <li class="main-header__item">
-                <a class="<%= path === '/' ? 'active' : '' %>" href="/">Shop</a>
-            </li>
+
             <li class="main-header__item">
                 <a class="<%= path === '/products' ? 'active' : '' %>" href="/products">Products</a>
             </li>
@@ -23,6 +21,28 @@
                 <a class="<%= path === '/admin/products' ? 'active' : '' %>" href="/admin/products">Admin Products
                 </a>
             </li>
+            <!-- Categories start -->
+
+            <li class="main-header__item">
+                <a class="<%= path === '/admin/add-category' ? 'active' : '' %>" href="/admin/add-category">Add Category
+                </a>
+            </li>
+            <li class="main-header__item">
+                <a class="<%= path === '/admin/categories' ? 'active' : '' %>" href="/admin/categories">Admin Categories
+                </a>
+            </li>
+
+            <!-- News start -->
+
+            <li class="main-header__item">
+                <a class="<%= path === '/admin/news/add-news' ? 'active' : '' %>" href="/admin/news/add-news">Add News
+                </a>
+            </li>
+            <li class="main-header__item">
+                <a class="<%= path === '/admin/news/news' ? 'active' : '' %>" href="/admin/news/news">Admin News
+                </a>
+            </li>
+
         </ul>
         <ul class="main-header__item-list">
             <% if(!isAuthenticated){  %>

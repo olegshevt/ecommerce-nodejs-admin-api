@@ -35,6 +35,20 @@
                     class="<%= validationErrors.find(item => item.param === 'description') ? 'error-intput' : '' %>"
                     rows="5"><% if (editing) { %><%= product.description %><% } %></textarea>
             </div>
+
+            <div class="form-control">
+                <label for="categories">Select category</label>
+
+                <select id="categories" name="categories">
+                    <option id="0"> Please choose a developer </option>
+                    <% categories.map(item => { %>
+                    <option value="<%= item._id%>" id="<%= item._id%>"> <%= item._id %> - <%= item.title %> </option>
+                    <% }) %>
+                </select>
+
+
+            </div>
+
             <% if (editing) { %>
             <input type="hidden" value="<%= product._id %>" name="productId">
             <% } %>

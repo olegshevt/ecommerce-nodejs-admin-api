@@ -29,7 +29,7 @@ router.post('/signup', [check('email').isEmail().normalizeEmail()
     }),
 body('password', 'Please enter a new password with only numbers and text.')
     .isLength({ min: 5 })
-    .isAlphanumeric().trim(),
+    .trim(),
 body('confirmPassword').trim().custom((value, { req }) => {
     if (value !== req.body.password) {
         throw new Error('Passwords have to match!');

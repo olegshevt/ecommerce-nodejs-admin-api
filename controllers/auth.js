@@ -39,35 +39,60 @@ exports.postLogin = (req, res, next) => {
             path: '/login',
             pageTitle: 'Login',
             errorMessage: errors.array()[0].msg,
-            oldInputs: { email: email, password: password },
+            oldInputs: {
+                email: email,
+                password: password
+            },
             validationErrors: errors.array()
         });
-    } else {
-        User.findOne({ email: email }).then(user => {
+    }
+
+    User.findOne({ email: email })
+        .then(user => {
             if (!user) {
                 return res.status(422).render('auth/login', {
                     path: '/login',
                     pageTitle: 'Login',
-                    errorMessage: errors.array()[0].msg,
-                    oldInputs: { email: email, password: password },
-                    validationErrors: errors.array()
+                    errorMessage: 'Invalid email or password 1.',
+                    oldInputs: {
+                        email: email,
+                        password: password
+                    },
+                    validationErrors: []
                 });
             }
-            bcrypt.compare(password, user.password).then(match => {
-                if (match) {
-                    req.session.isLoggedIn = true;
-                    req.session.user = user;
-                    return req.session.save(err => {
-                        console.log(err);
-                        res.redirect('/');
+            bcrypt
+                .compare(password, user.password)
+                .then(doMatch => {
+                    if (doMatch) {
+                        req.session.isLoggedIn = true;
+                        req.session.user = user;
+                        return req.session.save(err => {
+                            console.log(err);
+                            res.redirect('/');
+                        });
+                    }
+                    return res.status(422).render('auth/login', {
+                        path: '/login',
+                        pageTitle: 'Login',
+                        errorMessage: 'Invalid email or password 2.',
+                        oldInputs: {
+                            email: email,
+                            password: password
+                        },
+                        validationErrors: []
                     });
-                }
-                req.flash('error', 'Invalid email or password.');
-                res.redirect('/login');
-            })
+                })
+                .catch(err => {
+                    console.log(err);
+                    res.redirect('/login');
+                });
         })
-            .catch(err => console.log(err));
-    }
+        .catch(err => {
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
+        });
 };
 
 exports.postLogout = (req, res, next) => {
